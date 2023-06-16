@@ -45,6 +45,15 @@ void AWeaponShoot::Shoot()
 	m_ShootSound->Play();
 	m_ShootMuzzleFire->Activate();
 
+	DrawDebugLine
+	(
+		GetWorld(),
+		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector() * 1000.f,
+		FColor::Red,
+		true
+	);
+
 	m_HasShootRecently = true;
 	m_TimeUnitlShootVFXDeactivation = k_ShootVFXTime;
 }
