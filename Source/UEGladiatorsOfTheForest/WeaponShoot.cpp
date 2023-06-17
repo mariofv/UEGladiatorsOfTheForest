@@ -1,5 +1,7 @@
-#include "Components/SceneComponent.h"
 #include "WeaponShoot.h"
+
+#include "Components/SceneComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AWeaponShoot::AWeaponShoot()
@@ -20,7 +22,6 @@ AWeaponShoot::AWeaponShoot()
 void AWeaponShoot::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -45,6 +46,29 @@ void AWeaponShoot::Shoot()
 	m_ShootSound->Play();
 	m_ShootMuzzleFire->Activate();
 
+	TArray<AActor*> percivedActors;
+	m_OwnerPerceptionController->GetKnownPerceivedActors(TSubclassOf<UAISense>(), percivedActors);
+	verify(percivedActors.Num() <= 1);
+	if (percivedActors.IsEmpty())
+	{
+		MissShoot();
+	}
+	else
+	{
+		HitActor(percivedActors[0]);
+	}
+
+	m_HasShootRecently = true;
+	m_TimeUnitlShootVFXDeactivation = k_ShootVFXTime;
+}
+void AWeaponShoot::HitActor(AActor* p_Actor)
+{
+	FDamageEvent shootDamageEvent;
+	p_Actor->TakeDamage(k_ShootDamage, shootDamageEvent, m_OwnerAIController, this);
+}
+
+void AWeaponShoot::MissShoot()
+{
 	DrawDebugLine
 	(
 		GetWorld(),
@@ -53,8 +77,14 @@ void AWeaponShoot::Shoot()
 		FColor::Red,
 		true
 	);
+}
 
-	m_HasShootRecently = true;
-	m_TimeUnitlShootVFXDeactivation = k_ShootVFXTime;
+AAIController* AWeaponShoot::SetOwnerAIController(AAIController* p_OwnerAIController)
+{
+	m_OwnerAIController = p_OwnerAIController;
+	m_OwnerPerceptionController = 
+		static_cast<UAIPerceptionComponent*>(m_OwnerAIController->GetPawn()->GetComponentByClass(UAIPerceptionComponent::StaticClass()));
+
+	return m_OwnerAIController;
 }
 
