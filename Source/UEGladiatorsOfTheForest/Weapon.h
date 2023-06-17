@@ -9,6 +9,8 @@
 
 #include "Weapon.generated.h"
 
+class AWeaponShootImpactPool;
+
 UCLASS()
 class UEGLADIATORSOFTHEFOREST_API AWeapon : public AActor
 {
@@ -37,10 +39,12 @@ private:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UParticleSystemComponent* m_ShootMuzzleFire;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) UAudioComponent* m_ShootSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) UChildActorComponent* m_ShootImpactVFXPool;
 	UPROPERTY(BlueprintReadWrite, Category = "Variables") AAIController* m_OwnerAIController;
 
 private:
-	UAIPerceptionComponent* m_OwnerPerceptionController;
+	UAIPerceptionComponent* m_OwnerPerceptionController; 
+	AWeaponShootImpactPool* m_ShootImpactPool;
 
 private:
 	const float k_ShootDamage = 5.f;

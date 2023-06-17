@@ -2,6 +2,7 @@
 
 #include "Components/SceneComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "WeaponShootImpactPool.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -16,12 +17,16 @@ AWeapon::AWeapon()
 
 	m_ShootMuzzleFire = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ShootMuzzleFire"));
 	m_ShootMuzzleFire->SetupAttachment(RootComponent);
+
+	m_ShootImpactVFXPool = CreateDefaultSubobject<UChildActorComponent>(TEXT("ShootImpactVFXPool"));
+	m_ShootImpactVFXPool->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+	m_ShootImpactPool = static_cast<AWeaponShootImpactPool*>(m_ShootImpactVFXPool->GetChildActor());
 }
 
 // Called every frame
@@ -63,12 +68,18 @@ void AWeapon::Shoot()
 }
 void AWeapon::HitActor(AActor* p_Actor)
 {
+	FVector shootDirection = p_Actor->GetActorLocation() - GetActorLocation();
 	FDamageEvent shootDamageEvent;
 	p_Actor->TakeDamage(k_ShootDamage, shootDamageEvent, m_OwnerAIController, this);
+	m_ShootImpactPool->SpawnImpact(WeaponShootImpactType::Blood, p_Actor->GetTargetLocation(), shootDirection.Rotation());
 }
 
 void AWeapon::MissShoot()
 {
+	FVector shootDirection = GetActorForwardVector();
+
+	FHitResult hit;
+	bool hasHit = GetWorld()->LineTraceSingleByChannel(hit, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 1000.f, ECC_Pawn);
 	DrawDebugLine
 	(
 		GetWorld(),
@@ -77,6 +88,11 @@ void AWeapon::MissShoot()
 		FColor::Red,
 		true
 	);
+
+	if (hasHit && hit.GetActor())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Hit the actor %s"), *hit.GetActor()->GetName())
+	}
 }
 
 AAIController* AWeapon::SetOwnerAIController(AAIController* p_OwnerAIController)
