@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -9,16 +7,16 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 
-#include "WeaponShoot.generated.h"
+#include "Weapon.generated.h"
 
 UCLASS()
-class UEGLADIATORSOFTHEFOREST_API AWeaponShoot : public AActor
+class UEGLADIATORSOFTHEFOREST_API AWeapon : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AWeaponShoot();
+	AWeapon();
 
 protected:
 	// Called when the game starts or when spawned

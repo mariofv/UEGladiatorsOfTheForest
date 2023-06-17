@@ -1,10 +1,10 @@
-#include "WeaponShoot.h"
+#include "Weapon.h"
 
 #include "Components/SceneComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
-AWeaponShoot::AWeaponShoot()
+AWeapon::AWeapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -19,13 +19,13 @@ AWeaponShoot::AWeaponShoot()
 }
 
 // Called when the game starts or when spawned
-void AWeaponShoot::BeginPlay()
+void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
 // Called every frame
-void AWeaponShoot::Tick(float DeltaTime)
+void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -41,7 +41,7 @@ void AWeaponShoot::Tick(float DeltaTime)
 
 }
 
-void AWeaponShoot::Shoot()
+void AWeapon::Shoot()
 {
 	m_ShootSound->Play();
 	m_ShootMuzzleFire->Activate();
@@ -61,13 +61,13 @@ void AWeaponShoot::Shoot()
 	m_HasShootRecently = true;
 	m_TimeUnitlShootVFXDeactivation = k_ShootVFXTime;
 }
-void AWeaponShoot::HitActor(AActor* p_Actor)
+void AWeapon::HitActor(AActor* p_Actor)
 {
 	FDamageEvent shootDamageEvent;
 	p_Actor->TakeDamage(k_ShootDamage, shootDamageEvent, m_OwnerAIController, this);
 }
 
-void AWeaponShoot::MissShoot()
+void AWeapon::MissShoot()
 {
 	DrawDebugLine
 	(
@@ -79,7 +79,7 @@ void AWeaponShoot::MissShoot()
 	);
 }
 
-AAIController* AWeaponShoot::SetOwnerAIController(AAIController* p_OwnerAIController)
+AAIController* AWeapon::SetOwnerAIController(AAIController* p_OwnerAIController)
 {
 	m_OwnerAIController = p_OwnerAIController;
 	m_OwnerPerceptionController = 
