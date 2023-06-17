@@ -79,19 +79,10 @@ void AWeapon::MissShoot()
 	FVector shootDirection = GetActorForwardVector();
 
 	FHitResult hit;
-	bool hasHit = GetWorld()->LineTraceSingleByChannel(hit, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 1000.f, ECC_Pawn);
-	DrawDebugLine
-	(
-		GetWorld(),
-		GetActorLocation(),
-		GetActorLocation() + GetActorForwardVector() * 1000.f,
-		FColor::Red,
-		true
-	);
-
+	bool hasHit = GetWorld()->LineTraceSingleByChannel(hit, GetActorLocation(), GetActorLocation() + GetActorForwardVector() * 1000.f, ECC_WorldStatic);
 	if (hasHit && hit.GetActor())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Hit the actor %s"), *hit.GetActor()->GetName())
+		m_ShootImpactPool->SpawnImpact(WeaponShootImpactType::Concrete, hit.ImpactPoint, shootDirection.Rotation());
 	}
 }
 
