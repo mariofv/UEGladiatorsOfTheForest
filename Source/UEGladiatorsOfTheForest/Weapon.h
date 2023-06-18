@@ -52,7 +52,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components") UChildActorComponent* m_ShootImpactVFXPool = nullptr;
 	UPROPERTY(BlueprintReadWrite, Category = "Variables") AAIController* m_OwnerAIController = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") int m_BulletsInMagazine = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") int m_MagazineCapacity = 0;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") float m_ReloadTime = 0.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") float m_WeaponShootFrequency = 0.f;
 
@@ -65,7 +67,6 @@ private:
 	float m_CurrentStateTime = 0.f;
 
 	const float k_ShootDamage = 5.f;
-	int m_BulletsInMagazine = 0;
 
 	bool m_HasToDeactivateVFX = false;
 	float m_TimeUnitlShootVFXDeactivation = 0.f;
