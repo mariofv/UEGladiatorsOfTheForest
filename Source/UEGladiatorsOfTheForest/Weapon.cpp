@@ -74,9 +74,14 @@ void AWeapon::Tick(float DeltaTime)
 
 bool AWeapon::Shoot()
 {
-	if (m_WeaponState != WeaponState::Ready)
+	if (m_WeaponState == WeaponState::Reloading || m_WeaponState == WeaponState::Empty)
 	{
 		return false;
+	}
+	
+	if (m_WeaponState == WeaponState::Shooting)
+	{
+		return true;
 	}
 
 	m_ShootSound->Play();
@@ -101,14 +106,15 @@ bool AWeapon::Shoot()
 	if (m_BulletsInMagazine == 0)
 	{
 		m_WeaponState = WeaponState::Empty;
+		return false;
 	}
 	else
 	{
 		m_WeaponState = WeaponState::Shooting;
 		m_CurrentStateTime = m_WeaponShootFrequency;
+		return true;
 	}
 
-	return true;
 }
 
 void AWeapon::Reload()
