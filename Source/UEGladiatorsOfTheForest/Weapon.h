@@ -25,7 +25,6 @@ public:
 		Ready,
 		Shooting,
 		Empty,
-		Reloading,
 	};
 
 protected:

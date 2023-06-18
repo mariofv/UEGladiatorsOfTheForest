@@ -58,15 +58,6 @@ void AWeapon::Tick(float DeltaTime)
 			}
 			break;
 
-		case WeaponState::Reloading:
-			m_CurrentStateTime -= DeltaTime;
-			if (m_CurrentStateTime <= 0.f)
-			{
-				m_BulletsInMagazine = m_MagazineCapacity;
-				m_WeaponState = WeaponState::Ready;
-			}
-			break;
-
 		default:
 			break;
 	}
@@ -74,7 +65,7 @@ void AWeapon::Tick(float DeltaTime)
 
 bool AWeapon::Shoot()
 {
-	if (m_WeaponState == WeaponState::Reloading || m_WeaponState == WeaponState::Empty)
+	if (m_WeaponState == WeaponState::Empty)
 	{
 		return false;
 	}
@@ -119,9 +110,8 @@ bool AWeapon::Shoot()
 
 void AWeapon::Reload()
 {
-	m_WeaponState = WeaponState::Reloading;
-	m_CurrentStateTime = m_ReloadTime;
-	m_ReloadSound->Play();
+	m_BulletsInMagazine = m_MagazineCapacity;
+	m_WeaponState = WeaponState::Ready;
 }
 
 void AWeapon::HitActor(AActor* p_Actor)
