@@ -15,6 +15,9 @@ AWeapon::AWeapon()
 	m_ShootSound = CreateDefaultSubobject<UAudioComponent>(TEXT("ShootSound"));
 	m_ShootSound->SetupAttachment(RootComponent);
 
+	m_ReloadSound = CreateDefaultSubobject<UAudioComponent>(TEXT("ReloadSound"));
+	m_ReloadSound->SetupAttachment(RootComponent);
+
 	m_ShootMuzzleFire = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ShootMuzzleFire"));
 	m_ShootMuzzleFire->SetupAttachment(RootComponent);
 
@@ -27,6 +30,7 @@ void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	m_ShootImpactPool = static_cast<AWeaponShootImpactPool*>(m_ShootImpactVFXPool->GetChildActor());
+	m_BulletsInMagazine = m_MagazineCapacity;
 }
 
 // Called every frame
@@ -34,20 +38,47 @@ void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (m_HasShootRecently)
+	if (m_HasToDeactivateVFX)
 	{
 		m_TimeUnitlShootVFXDeactivation -= DeltaTime;
 		if (m_TimeUnitlShootVFXDeactivation <= 0.f)
 		{
 			m_ShootMuzzleFire->Deactivate();
-			m_HasShootRecently = false;
+			m_HasToDeactivateVFX = false;
 		}
 	}
 
+	switch (m_WeaponState)
+	{
+		case WeaponState::Shooting:
+			m_CurrentStateTime -= DeltaTime;
+			if (m_CurrentStateTime <= 0.f)
+			{
+				m_WeaponState = WeaponState::Ready;
+			}
+			break;
+
+		case WeaponState::Reloading:
+			m_CurrentStateTime -= DeltaTime;
+			if (m_CurrentStateTime <= 0.f)
+			{
+				m_BulletsInMagazine = m_MagazineCapacity;
+				m_WeaponState = WeaponState::Ready;
+			}
+			break;
+
+		default:
+			break;
+	}
 }
 
-void AWeapon::Shoot()
+bool AWeapon::Shoot()
 {
+	if (m_WeaponState != WeaponState::Ready)
+	{
+		return false;
+	}
+
 	m_ShootSound->Play();
 	m_ShootMuzzleFire->Activate();
 
@@ -63,9 +94,30 @@ void AWeapon::Shoot()
 		HitActor(percivedActors[0]);
 	}
 
-	m_HasShootRecently = true;
+	m_HasToDeactivateVFX = true;
 	m_TimeUnitlShootVFXDeactivation = k_ShootVFXTime;
+
+	m_BulletsInMagazine = FMath::Max(0, m_BulletsInMagazine - 1);
+	if (m_BulletsInMagazine == 0)
+	{
+		m_WeaponState = WeaponState::Empty;
+	}
+	else
+	{
+		m_WeaponState = WeaponState::Shooting;
+		m_CurrentStateTime = m_WeaponShootFrequency;
+	}
+
+	return true;
 }
+
+void AWeapon::Reload()
+{
+	m_WeaponState = WeaponState::Reloading;
+	m_CurrentStateTime = m_ReloadTime;
+	m_ReloadSound->Play();
+}
+
 void AWeapon::HitActor(AActor* p_Actor)
 {
 	FVector shootDirection = p_Actor->GetActorLocation() - GetActorLocation();
