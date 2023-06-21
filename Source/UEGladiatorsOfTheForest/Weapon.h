@@ -66,6 +66,7 @@ private:
 	float m_CurrentStateTime = 0.f;
 
 	const float k_ShootDamage = 5.f;
+	const float k_ShootHitProbability = 0.6f;
 
 	bool m_HasToDeactivateVFX = false;
 	float m_TimeUnitlShootVFXDeactivation = 0.f;

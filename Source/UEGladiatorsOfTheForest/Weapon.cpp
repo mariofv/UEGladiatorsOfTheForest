@@ -87,7 +87,15 @@ bool AWeapon::Shoot()
 	}
 	else
 	{
-		HitActor(percivedActors[0]);
+		float diceRoll = FMath::RandRange(0.f, 1.f);
+		if (diceRoll < k_ShootHitProbability)
+		{
+			HitActor(percivedActors[0]);
+		}
+		else
+		{
+			MissShoot();
+		}
 	}
 
 	m_HasToDeactivateVFX = true;
