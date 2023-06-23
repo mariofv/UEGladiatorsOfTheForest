@@ -1,5 +1,6 @@
 #include "Weapon.h"
 
+#include "Perception/AISense_Damage.h"
 #include "Components/SceneComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "WeaponShootImpactPool.h"
@@ -80,7 +81,6 @@ bool AWeapon::Shoot()
 
 	TArray<AActor*> percivedActors;
 	m_OwnerPerceptionController->GetKnownPerceivedActors(TSubclassOf<UAISense>(), percivedActors);
-	verify(percivedActors.Num() <= 1);
 	if (percivedActors.IsEmpty())
 	{
 		MissShoot();
@@ -126,7 +126,16 @@ void AWeapon::HitActor(AActor* p_Actor)
 {
 	FVector shootDirection = p_Actor->GetActorLocation() - GetActorLocation();
 	FDamageEvent shootDamageEvent;
-	p_Actor->TakeDamage(k_ShootDamage, shootDamageEvent, m_OwnerAIController, this);
+	p_Actor->TakeDamage(k_ShootDamage, shootDamageEvent, m_OwnerAIController, m_OwnerAIController->GetPawn());
+	UAISense_Damage::ReportDamageEvent
+	(
+		GetWorld(),
+		p_Actor,
+		m_OwnerAIController->GetPawn(),
+		k_ShootDamage,
+		p_Actor->GetActorLocation(),
+		p_Actor->GetActorLocation()
+	);
 	m_ShootImpactPool->SpawnImpact(WeaponShootImpactType::Blood, p_Actor->GetTargetLocation(), shootDirection.Rotation());
 }
 
@@ -146,7 +155,7 @@ AAIController* AWeapon::SetOwnerAIController(AAIController* p_OwnerAIController)
 {
 	m_OwnerAIController = p_OwnerAIController;
 	m_OwnerPerceptionController = 
-		static_cast<UAIPerceptionComponent*>(m_OwnerAIController->GetPawn()->GetComponentByClass(UAIPerceptionComponent::StaticClass()));
+		static_cast<UAIPerceptionComponent*>(m_OwnerAIController->GetComponentByClass(UAIPerceptionComponent::StaticClass()));
 
 	return m_OwnerAIController;
 }
