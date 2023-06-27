@@ -17,7 +17,7 @@ If you want to edit the project / examine the setup in the editor please clone t
 - This AI uses the behaviour tree `BP_Ranged_Gladiator_BT`. 
 
 ## AI Clarifications
-- Almost all the behaviour tree tasks hve been developed in Blueprints.
+- Almost all the behaviour tree tasks have been developed in Blueprints.
 - There are two exceptions to this: the `Aim Task` and the `Clear Focus Task`.
 - The `Aim Task` has a Blueprint implementation in `BP_Aim_Target_Task` and a C++ implementation in the class `UBTTaskAimTarget`. The behaviour tree uses the later.
 - The `Clear Focus Task` has a C++ implementation in `UBTTaskClearFocus`.
