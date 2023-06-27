@@ -1,6 +1,7 @@
 #include "Weapon.h"
 
 #include "Perception/AISense_Damage.h"
+#include "Perception/AISense_Sight.h"
 #include "Components/SceneComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "WeaponShootImpactPool.h"
@@ -80,7 +81,8 @@ bool AWeapon::Shoot()
 	m_ShootMuzzleFire->Activate();
 
 	TArray<AActor*> percivedActors;
-	m_OwnerPerceptionController->GetKnownPerceivedActors(TSubclassOf<UAISense>(), percivedActors);
+	m_OwnerPerceptionController->GetKnownPerceivedActors(UAISense_Sight::StaticClass(), percivedActors);
+	verify(percivedActors.Num() <= 1);
 	if (percivedActors.IsEmpty())
 	{
 		MissShoot();
@@ -126,12 +128,14 @@ void AWeapon::HitActor(AActor* p_Actor)
 {
 	FVector shootDirection = p_Actor->GetActorLocation() - GetActorLocation();
 	FDamageEvent shootDamageEvent;
-	p_Actor->TakeDamage(k_ShootDamage, shootDamageEvent, m_OwnerAIController, m_OwnerAIController->GetPawn());
+	
+	AActor* weaponOwner = m_OwnerAIController->GetPawn();
+	p_Actor->TakeDamage(k_ShootDamage, shootDamageEvent, m_OwnerAIController, weaponOwner);
 	UAISense_Damage::ReportDamageEvent
 	(
 		GetWorld(),
-		p_Actor,
-		m_OwnerAIController->GetPawn(),
+		p_Actor, 
+		weaponOwner,
 		k_ShootDamage,
 		p_Actor->GetActorLocation(),
 		p_Actor->GetActorLocation()
