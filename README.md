@@ -22,8 +22,8 @@ If you want to edit the project / examine the setup in the editor please clone t
 - The `Aim Task` has a Blueprint implementation in `BP_Aim_Target_Task` and a C++ implementation in the class `UBTTaskAimTarget`. The behaviour tree uses the later.
 - The `Clear Focus Task` has a C++ implementation in `UBTTaskClearFocus`.
 - The reason for just having only two tasks implemented in C++ is that the project was built on top of a base project that is purely Blueprints.
-- Because of this is really difficult to call Blueprint defined methods from C++, and some stuff was redeclared like the `RotationMode` for the `SetRotationMode` method.
-- A solution for this problem would be reimplementing hte project on top of a base project that uses C++, like [this one](https://github.com/dyanikoglu/ALS-Community).
+- Because of this it is really difficult to call Blueprint defined methods from C++, and some stuff was redeclared like the `RotationMode` for the `SetRotationMode` method.
+- A solution for this problem would be reimplementing the project on top of a base project that uses C++, like [this one](https://github.com/dyanikoglu/ALS-Community).
    
 ## Built With
 * [Advanced Locomotion System V4](https://www.unrealengine.com/marketplace/en-US/product/advanced-locomotion-system-v1) - Used as a base project for the diferent animations.
